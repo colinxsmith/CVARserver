@@ -1,0 +1,22 @@
+{
+  "name": "cvarserver",
+  "version": "1.0.0",
+  "description": "Optimiser for ETL",
+  "main": "cvarOpt.js",
+  "scripts": {
+    "test": "export LD_LIBRARY_PATH=/home/colin/safeqp && node cvarOpt.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colinxsmith/CVarServer.git"
+  },
+  "author": "Colin Smith",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/colinxsmith/CVarServer/issues"
+  },
+  "homepage": "https://github.com/colinxsmith/CVarServer#readme",
+  "dependencies": {
+    "node": "^12.6.0"
+  }
+}
