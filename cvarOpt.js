@@ -118,6 +118,10 @@ var optEtl = (inputs) => {
     console.log('Historic risk', histRisk);
     var cvarVal = optObj.CVarValue(n, t, DATA, number_included, w_opt);
     console.log('Etl', cvarVal);
+    exports.CVAR= cvarVal;
+    exports.RISK=histRisk;
+    exports.RETURN=histReturn;
+    exports.message=optObj.Return_Message(back);
 }
 
 exports.optEtl = optEtl;
