@@ -98,6 +98,7 @@ var optEtl = (inputs) => {
         }
         returns[i] /= t;
     }
+    exports.alpha = returns;
     var histReturn = optObj.ddotvec(n, w_opt, returns);
     console.log('Historic return', histReturn);
     var COV = Array(n * (n + 1) / 2);
