@@ -66,6 +66,22 @@ var optEtl = (inputs) => {
             inputs.upper[i] = 1;
         }
     }
+    if (inputs.alpha === undefined || inputs.alpha.length < n) {
+        alpha = [];
+    } else {
+        alpha = Array(n);
+        for (let i = 0; i < n; ++i) {
+            alpha[i] = inputs.alpha[i];
+        }
+    }
+    if (inputs.CVar_averse === undefined) {
+        inputs.CVar_averse = 1000;
+        console.log('CVar_averse not set');
+    } 
+       if (inputs.gamma === undefined) {
+        inputs.gamma = 0;
+        console.log('CVar_averse not set');
+    }
     assets = Array(n);
     for (let i = 0; i < n; ++i) {
         assets[i] = `stock${i + 1}`;
@@ -75,6 +91,8 @@ var optEtl = (inputs) => {
     }
     L[n] = 1;
     U[n] = 1;
+    CVar_averse = inputs.CVar_averse;
+    gamma=inputs.gamma;
     var back = optObj.CvarOptimiseC(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
         A, L, U, alpha, benchmark, Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
         ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
@@ -90,17 +108,21 @@ var optEtl = (inputs) => {
     for (let i = 0; i < t; ++i) {
         decay[i] = 1;
     }
-    for (let i = 0; i < n; ++i) {
-        var internal = DATA.slice(i * t, (i + 1) * t);
-        returns[i] = 0;
-        for (let j = 0; j < t; ++j) {
-            returns[i] += +internal[j];
+    if (inputs.alpha === undefined || inputs.alpha.length < n) {
+        for (let i = 0; i < n; ++i) {
+            var internal = DATA.slice(i * t, (i + 1) * t);
+            returns[i] = 0;
+            for (let j = 0; j < t; ++j) {
+                returns[i] += +internal[j];
+            }
+            returns[i] /= t;
         }
-        returns[i] /= t;
+        exports.alpha = returns;
+    } else {
+        exports.alpha = alpha;
     }
-    exports.alpha = returns;
-    var histReturn = optObj.ddotvec(n, w_opt, returns);
-    console.log('Historic return', histReturn);
+    var expReturn = optObj.ddotvec(n, w_opt, inputs.alpha === undefined || inputs.alpha.length < n ? returns : alpha);
+    console.log('Historic return', expReturn);
     var COV = Array(n * (n + 1) / 2);
     for (let i = 0, ij = 0; i < n; ++i) {
         var internali = DATA.slice(i * t, (i + 1) * t);
@@ -119,10 +141,10 @@ var optEtl = (inputs) => {
     console.log('Historic risk', histRisk);
     var cvarVal = optObj.CVarValue(n, t, DATA, number_included, w_opt);
     console.log('Etl', cvarVal);
-    exports.CVAR= cvarVal;
-    exports.RISK=histRisk;
-    exports.RETURN=histReturn;
-    exports.message=optObj.Return_Message(back);
+    exports.CVAR = cvarVal;
+    exports.RISK = histRisk;
+    exports.RETURN = expReturn;
+    exports.message = optObj.Return_Message(back);
 }
 
 exports.optEtl = optEtl;
