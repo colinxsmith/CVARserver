@@ -77,10 +77,21 @@ var optEtl = (inputs) => {
     if (inputs.CVar_averse === undefined) {
         inputs.CVar_averse = 1000;
         console.log('CVar_averse not set');
-    } 
-       if (inputs.gamma === undefined) {
+    }
+    if (inputs.gamma === undefined) {
         inputs.gamma = 0;
         console.log('CVar_averse not set');
+    }
+    if (inputs.initial === undefined || inputs.initial.length < n) {
+        initial = Array(n);
+        for (let i = 0; i < n; ++i) {
+            initial[i] = 1.0 / n;
+        }
+    } else {
+        initial = Array(n);
+        for (let i = 0; i < n; ++i) {
+            initial[i] = inputs.initial[i];
+        }
     }
     assets = Array(n);
     for (let i = 0; i < n; ++i) {
@@ -91,13 +102,27 @@ var optEtl = (inputs) => {
     }
     L[n] = 1;
     U[n] = 1;
+    var noRiskModel = false;
+    var QQ;
     CVar_averse = inputs.CVar_averse;
-    gamma=inputs.gamma;
+    if (inputs.noRiskModel !== undefined) {
+        noRiskModel = inputs.noRiskModel;
+    }
+    if (noRiskModel) {
+        QQ = Array(n * (n + 1) / 2);
+        for (let i = 0; i < n * (n + 1) / 2; ++i) {
+            QQ[i] = 0;
+        }
+    }
+    gamma = inputs.gamma;
+    delta = inputs.delta;
+    revise = inputs.revise;
     var back = optObj.CvarOptimiseC(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
-        A, L, U, alpha, benchmark, Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
+        A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
         ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
         mask, log, logfile, longbasket, shortbasket, LSValuel, Abs_L, costs, buy, sell, CVar_constraint, CVarMin, CVarMax);
 
+    exports.initial = initial;
     exports.lower = inputs.lower;
     exports.upper = inputs.upper;
     exports.weights = w_opt;
