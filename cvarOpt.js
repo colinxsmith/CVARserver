@@ -103,7 +103,7 @@ var optEtl = (inputs) => {
     if (inputs.buy === undefined || inputs.buy.length < n) {
         buy = Array(n);
         for (let i = 0; i < n; ++i) {
-            buy[i] = 1e-2;
+            buy[i] = 0;
         }
     } else {
         buy = Array(n);
@@ -114,7 +114,7 @@ var optEtl = (inputs) => {
     if (inputs.sell === undefined || inputs.sell.length < n) {
         sell = Array(n);
         for (let i = 0; i < n; ++i) {
-            sell[i] = 1e-2;
+            sell[i] = 0;
         }
     } else {
         sell = Array(n);
