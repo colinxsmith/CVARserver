@@ -7,7 +7,7 @@ var optEtl = (inputs) => {
     var n = 19;
     var t = 1836;
     var number_included = Math.floor(t * 0.95);
-    var CVar_averse = 100;
+    var CVar_averse = 1;
     var getRisk = -1;
     var stocknames = '';
     var w_opt = Array(19);
@@ -75,12 +75,19 @@ var optEtl = (inputs) => {
         }
     }
     if (inputs.CVar_averse === undefined) {
-        inputs.CVar_averse = 1000;
-        console.log('CVar_averse not set');
+        inputs.CVar_averse = CVar_averse;
     }
     if (inputs.gamma === undefined) {
-        inputs.gamma = 0;
-        console.log('CVar_averse not set');
+        inputs.gamma = gamma;
+    }
+    if (inputs.delta === undefined) {
+        inputs.delta = delta;
+    }
+    if (inputs.revise === undefined) {
+        inputs.revise = revise;
+    }
+    if (inputs.costs === undefined) {
+        inputs.costs = costs;
     }
     if (inputs.initial === undefined || inputs.initial.length < n) {
         initial = Array(n);
@@ -93,6 +100,28 @@ var optEtl = (inputs) => {
             initial[i] = inputs.initial[i];
         }
     }
+    if (inputs.buy === undefined || inputs.buy.length < n) {
+        buy = Array(n);
+        for (let i = 0; i < n; ++i) {
+            buy[i] = 1e-2;
+        }
+    } else {
+        buy = Array(n);
+        for (let i = 0; i < n; ++i) {
+            buy[i] = inputs.buy[i];
+        }
+    }
+    if (inputs.sell === undefined || inputs.sell.length < n) {
+        sell = Array(n);
+        for (let i = 0; i < n; ++i) {
+            sell[i] = 1e-2;
+        }
+    } else {
+        sell = Array(n);
+        for (let i = 0; i < n; ++i) {
+            sell[i] = inputs.sell[i];
+        }
+    }
     assets = Array(n);
     for (let i = 0; i < n; ++i) {
         assets[i] = `stock${i + 1}`;
@@ -102,12 +131,14 @@ var optEtl = (inputs) => {
     }
     L[n] = 1;
     U[n] = 1;
-    var noRiskModel = false;
+    var noRiskModel = true; // Use zero risk model so that first optimisation is just CVAR
     var QQ;
     CVar_averse = inputs.CVar_averse;
-    if (inputs.noRiskModel !== undefined) {
-        noRiskModel = inputs.noRiskModel;
+    if (inputs.noRiskModel === undefined) {
+        inputs.noRiskModel = noRiskModel;
     }
+
+    noRiskModel = inputs.noRiskModel;
     if (noRiskModel) {
         QQ = Array(n * (n + 1) / 2);
         for (let i = 0; i < n * (n + 1) / 2; ++i) {
@@ -117,12 +148,15 @@ var optEtl = (inputs) => {
     gamma = inputs.gamma;
     delta = inputs.delta;
     revise = inputs.revise;
+    costs = inputs.costs;
     var back = optObj.CvarOptimiseC(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
         A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
         ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
         mask, log, logfile, longbasket, shortbasket, LSValuel, Abs_L, costs, buy, sell, CVar_constraint, CVarMin, CVarMax);
 
     exports.initial = initial;
+    exports.buy = buy;
+    exports.sell = sell;
     exports.lower = inputs.lower;
     exports.upper = inputs.upper;
     exports.weights = w_opt;
