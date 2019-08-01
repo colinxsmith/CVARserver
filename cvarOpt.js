@@ -174,7 +174,7 @@ var optEtl = (inputs) => {
             for (let j = 0; j < t; ++j) {
                 returns[i] += +internal[j];
             }
-            returns[i] /= t;
+            returns[i] /= -t;
         }
         exports.alpha = returns;
     } else {
