@@ -54,6 +54,12 @@ var optEtl = (inputs) => {
     var CVar_constraint = 0;
     var CVarMin = -1.593e-05;
     var CVarMax = -1.592e-05;
+    var relEtl = true;
+  if(inputs.relEtl===undefined){
+  relEtl=  inputs.relEtl=true;
+  }else{
+    relEtl=inputs.relEtl;
+  }
     if (inputs.lower === undefined || inputs.lower.length === 0) {
         inputs.lower = Array(n);
         for (let i = 0; i < n; ++i) {
@@ -67,6 +73,9 @@ var optEtl = (inputs) => {
         }
     }
     if (inputs.alpha === undefined || inputs.alpha.length < n) {
+    if(relEtl){
+      inputs.gamma=gamma=0.99;
+    }
         alpha = [];
     } else {
         alpha = Array(n);
@@ -91,8 +100,12 @@ var optEtl = (inputs) => {
     }
     if (inputs.initial === undefined || inputs.initial.length < n) {
         initial = Array(n);
+      var sum=0;
         for (let i = 0; i < n; ++i) {
-            initial[i] = 1.0 / n;
+            initial[i] = i;sum+=initial[i];
+        }
+        for (let i = 0; i < n; ++i) {
+          initial[i]/=sum;
         }
     } else {
         initial = Array(n);
@@ -149,6 +162,17 @@ var optEtl = (inputs) => {
     delta = inputs.delta;
     revise = inputs.revise;
     costs = inputs.costs;
+    if (relEtl) {
+            for (let j = 0; j < t; ++j) {
+          var relret=0;
+        for (let i = 0; i < n; ++i) {
+              relret+=+DATA[j+i*t]*initial[i];
+            }
+        for (let i = 0; i < n; ++i) {
+                DATA[j + t * i] -= relret;
+            }
+        }
+    }
     var back = optObj.CvarOptimiseC(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
         A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
         ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
@@ -161,9 +185,12 @@ var optEtl = (inputs) => {
     exports.upper = inputs.upper;
     exports.weights = w_opt;
     exports.names = assets;
+  exports.gamma=gamma;
+  exports.relEtl=relEtl;
 
     console.log(optObj.Return_Message(back));
-    var returns = Array(n), decay = Array(t);
+    var returns = Array(n),
+        decay = Array(t);
     for (let i = 0; i < t; ++i) {
         decay[i] = 1;
     }
@@ -185,7 +212,7 @@ var optEtl = (inputs) => {
     var COV = Array(n * (n + 1) / 2);
     for (let i = 0, ij = 0; i < n; ++i) {
         var internali = DATA.slice(i * t, (i + 1) * t);
-        for (let j = 0; j <= i; j++ , ij++) {
+        for (let j = 0; j <= i; j++, ij++) {
             if (i === j) {
                 COV[ij] = optObj.covariance1(internali, internali, decay, t);
             } else {
