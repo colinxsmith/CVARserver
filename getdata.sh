@@ -8,6 +8,5 @@ do
     echo $stock
     sed -n "s/^$stock,//p" "$model" >> datafile
 done
-sed "s/,/ /g" datafile > nocommas
-
-awk  '{print NF;}' nocommas 
+sed -i "s/,/ /g" datafile
+awk  '{print NF;}' datafile 
