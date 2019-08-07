@@ -162,9 +162,9 @@ var optEtl = (inputs) => {
     delta = inputs.delta;
     revise = inputs.revise;
     costs = inputs.costs;
-    DATA.forEach((d, i) => {
+    for (let i = 0; i < DATA.length; ++i) {
         DATA[i] = - +DATA[i];
-    });
+    }
     if (relEtl) {
         for (let j = 0; j < t; ++j) {
             var relret = 0;
