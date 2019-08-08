@@ -3,7 +3,10 @@ var datObj = require('./readFile.js');
 console.log(optObj.CvarOptimiseCR.toString());
 var optEtl = (inputs) => {
     var eps = Math.abs((4 / 3 - 1) * 3 - 1);
-    var DATA = datObj.hist;
+    var DATA = Array(datObj.hist.length);
+    for (let i = 0; i < datObj.hist.length; ++i) {
+        DATA[i] = -datObj.hist[i];
+    }
     var n = datObj.n;
     var t = datObj.tlen;
     var number_included = Math.floor(t * 0.95);
@@ -162,9 +165,6 @@ var optEtl = (inputs) => {
     delta = inputs.delta;
     revise = inputs.revise;
     costs = inputs.costs;
-    for (let i = 0; i < DATA.length; ++i) {
-        DATA[i] = - +DATA[i];
-    }
     if (relEtl) {
         for (let j = 0; j < t; ++j) {
             var relret = 0;
