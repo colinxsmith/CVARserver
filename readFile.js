@@ -5,7 +5,7 @@ let read = '';
 for (let i = 0; i < line_len; ++i) {
     read += 'a';
 }
-var fwords = new parseObj.StringVector(), space = ' ', parseFile = '../CVARserver/portfolio';
+var fwords = new parseObj.StringVector(), space = ' ', parseFile = '../CVARserver/portfolio1';
 var keys = 'n names DATA tlen';
 var scalars = 'n tlen';
 try {
@@ -30,7 +30,7 @@ var hist = parseObj.getv(DATA, 'DATA');
 var tlen = +parseObj.gets(DATA, 'tlen');
 var n = +parseObj.gets(DATA, 'n');
 var names = parseObj.getv(DATA, 'names');
-console.log(hist.length, tlen, hist.length / tlen);
+console.log(n, hist.length, tlen, hist.length / tlen);
 exports.hist = hist;
 exports.n = n;
 exports.names = names;
