@@ -58,6 +58,15 @@ var optEtl = (inputs) => {
     var CVarMin = -1.593e-05;
     var CVarMax = -1.592e-05;
     var relEtl = true;
+    if (inputs.CVar_constraint !== undefined) {
+        CVar_constraint = inputs.CVar_constraint;
+    }
+    if (inputs.CVarMax !== undefined) {
+        CVarMax = inputs.CVarMax;
+    }
+    if (inputs.CVarMin !== undefined) {
+        CVarMin = inputs.CVarMin;
+    }
     if (inputs.relEtl === undefined) {
         relEtl = inputs.relEtl = true;
     } else {
@@ -175,6 +184,9 @@ var optEtl = (inputs) => {
                 DATA[j + t * i] -= relret;
             }
         }
+    }
+    if (gamma < eps && CVar_constraint === 1) {
+        gamma = 1;
     }
     var back = optObj.CvarOptimiseCR(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
         A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
