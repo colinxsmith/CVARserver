@@ -147,6 +147,24 @@ var optEtl = (inputs) => {
             sell[i] = inputs.sell[i];
         }
     }
+    if(inputs.basket!=undefined&&inputs.basket>-1){
+        basket=inputs.basket;
+    }
+    if(inputs.trades!=undefined&&inputs.trades>-1){
+        trades=inputs.trades;
+    }
+    if (inputs.min_holding != undefined && inputs.min_holding > -1) {
+        min_holding = Array(n);
+        for (let i = 0; i < n; ++i) {
+            min_holding[i] = inputs.min_holding;
+        }
+    }
+    if (inputs.min_trade != undefined && inputs.min_trade > -1) {
+        min_trade = Array(n);
+        for (let i = 0; i < n; ++i) {
+            min_trade[i] = inputs.min_trade;
+        }
+    }
     assets = Array(n);
     for (let i = 0; i < n; ++i) {
         assets[i] = `stock${i + 1}`;
