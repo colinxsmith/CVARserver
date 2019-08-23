@@ -114,7 +114,7 @@ var optEtl = (inputs) => {
         initial = Array(n);
         var sum = 0;
         for (let i = 0; i < n; ++i) {
-            initial[i] = i; sum += initial[i];
+            initial[i] = i < 60 ? i + 1 : 0; sum += initial[i];
         }
         for (let i = 0; i < n; ++i) {
             initial[i] /= sum;
@@ -147,11 +147,11 @@ var optEtl = (inputs) => {
             sell[i] = inputs.sell[i];
         }
     }
-    if(inputs.basket!=undefined&&inputs.basket>-1){
-        basket=inputs.basket;
+    if (inputs.basket != undefined && inputs.basket > -1) {
+        basket = inputs.basket;
     }
-    if(inputs.trades!=undefined&&inputs.trades>-1){
-        trades=inputs.trades;
+    if (inputs.trades != undefined && inputs.trades > -1) {
+        trades = inputs.trades;
     }
     if (inputs.min_holding != undefined && inputs.min_holding > -1) {
         min_holding = Array(n);
