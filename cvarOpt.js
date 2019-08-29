@@ -3,6 +3,7 @@ var datObj = require('./readFile.js');
 console.log(optObj.CvarOptimiseCR.toString());
 var optEtl = (inputs) => {
     var eps = Math.abs((4 / 3 - 1) * 3 - 1);
+    var firstRun = false;
     var DATA = Array(datObj.hist.length);
     for (let i = 0; i < datObj.hist.length; ++i) {
         DATA[i] = -datObj.hist[i];
@@ -57,7 +58,7 @@ var optEtl = (inputs) => {
     var CVar_constraint = 0;
     var CVarMin = -1.593e-05;
     var CVarMax = -1.592e-05;
-    var relEtl = true;
+    var relEtl = false;
     if (inputs.CVar_constraint !== undefined) {
         CVar_constraint = inputs.CVar_constraint;
     }
@@ -73,6 +74,7 @@ var optEtl = (inputs) => {
         relEtl = inputs.relEtl;
     }
     if (inputs.lower === undefined || inputs.lower.length === 0) {
+        firstRun = true;
         inputs.lower = Array(n);
         for (let i = 0; i < n; ++i) {
             inputs.lower[i] = 0;
@@ -192,7 +194,9 @@ var optEtl = (inputs) => {
     delta = inputs.delta;
     revise = inputs.revise;
     costs = inputs.costs;
-    if (relEtl) {
+    var initialCvarVal = optObj.CVarValue(n, t, DATA, number_included, initial);
+    if (relEtl || firstRun) {
+        console.log('Get relative data returns');
         for (let j = 0; j < t; ++j) {
             var relret = 0;
             for (let i = 0; i < n; ++i) {
@@ -203,13 +207,20 @@ var optEtl = (inputs) => {
             }
         }
     }
-    if (gamma < eps && CVar_constraint === 1) {
-        gamma = 1;
+    /*    if (gamma < eps && CVar_constraint === 1) {
+            gamma = 1;
+        }*/
+    var back;
+    if (!firstRun) {
+        back = optObj.CvarOptimiseCR(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
+            A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
+            ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
+            mask, log, logfile, longbasket, shortbasket, LSValuel, Abs_L, costs, buy, sell, CVar_constraint, CVarMin, CVarMax, 0);
+    } else {
+        for (let i = 0; i < n; ++i) {
+            w_opt[i] = initial[i];
+        }
     }
-    var back = optObj.CvarOptimiseCR(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
-        A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
-        ls, full, Rmin, Rmax, round, min_lot, size_lot, shake, LSValue, nabs, Abs_A, mabs, I_A, Abs_U, ogamma,
-        mask, log, logfile, longbasket, shortbasket, LSValuel, Abs_L, costs, buy, sell, CVar_constraint, CVarMin, CVarMax, 0);
 
     exports.initial = initial;
     exports.buy = buy;
@@ -221,7 +232,9 @@ var optEtl = (inputs) => {
     exports.gamma = gamma;
     exports.relEtl = relEtl;
 
-    console.log(optObj.Return_Message(back));
+    if (!firstRun) {
+        console.log(optObj.Return_Message(back));
+    }
     var returns = Array(n),
         decay = Array(t);
     for (let i = 0; i < t; ++i) {
@@ -263,12 +276,12 @@ var optEtl = (inputs) => {
     }
     var histRisk = Math.sqrt(variance);
     console.log('Historic risk', histRisk);
-    var cvarVal = optObj.CVarValue(n, t, DATA, number_included, w_opt);
+    var cvarVal = firstRun ? initialCvarVal : optObj.CVarValue(n, t, DATA, number_included, w_opt);
     console.log('Etl', cvarVal);
     exports.CVAR = cvarVal;
     exports.RISK = histRisk;
     exports.RETURN = expReturn;
-    exports.message = optObj.Return_Message(back);
+    exports.message = firstRun ? '' : optObj.Return_Message(back);
 }
 
 exports.optEtl = optEtl;
