@@ -116,7 +116,8 @@ var optEtl = (inputs) => {
         initial = Array(n);
         var sum = 0;
         for (let i = 0; i < n; ++i) {
-            initial[i] = i < 60 ? i + 1 : 0; sum += initial[i];
+            initial[i] = i < 60 ? i + 1 : 0;
+            sum += initial[i];
         }
         for (let i = 0; i < n; ++i) {
             initial[i] /= sum;
@@ -195,7 +196,7 @@ var optEtl = (inputs) => {
     revise = inputs.revise;
     costs = inputs.costs;
     var initialCvarVal = optObj.CVarValue(n, t, DATA, number_included, initial);
-    if (relEtl || firstRun) {
+    if (relEtl) {
         console.log('Get relative data returns');
         for (let j = 0; j < t; ++j) {
             var relret = 0;
@@ -258,7 +259,7 @@ var optEtl = (inputs) => {
     var COV = Array(n * (n + 1) / 2);
     for (let i = 0, ij = 0; i < n; ++i) {
         var internali = DATA.slice(i * t, (i + 1) * t);
-        for (let j = 0; j <= i; j++ , ij++) {
+        for (let j = 0; j <= i; j++, ij++) {
             if (i === j) {
                 COV[ij] = optObj.covariance1(internali, internali, decay, t);
             } else {
