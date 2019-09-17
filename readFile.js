@@ -5,7 +5,7 @@ let read = '';
 for (let i = 0; i < line_len; ++i) {
     read += 'a';
 }
-var fwords = new parseObj.StringVector(), space = ' ', parseFile = '../CVARserver/portfolioU';
+var fwords = new parseObj.StringVector(), space = ' ', parseFile = '../CVARserver/portfolioUA';
 var keys = 'n names DATA tlen';
 var scalars = 'n tlen';
 try {
