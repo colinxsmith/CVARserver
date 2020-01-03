@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/colinxsmith/CVarServer#readme",
   "dependencies": {
-    "node": "^12.7.0"
+    "node": "^12.14.0"
   }
 }
