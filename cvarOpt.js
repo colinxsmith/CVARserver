@@ -211,7 +211,7 @@ var optEtl = (inputs) => {
     /*    if (gamma < eps && CVar_constraint === 1) {
             gamma = 1;
         }*/
-    var back;
+    var back = -1;
     if (!firstRun) {
         back = optObj.CvarOptimiseCR(n, t, DATA, number_included, CVar_averse, getRisk, stocknames, w_opt, m,
             A, L, U, alpha, benchmark, noRiskModel ? QQ : Q, gamma, initial, delta, basket, trades, revise, min_holding, min_trade,
@@ -223,6 +223,7 @@ var optEtl = (inputs) => {
         }
     }
 
+    exports.back = back;
     exports.initial = initial;
     exports.buy = buy;
     exports.sell = sell;
@@ -256,31 +257,31 @@ var optEtl = (inputs) => {
     }
     var expReturn = optObj.ddotvec(n, w_opt, inputs.alpha === undefined || inputs.alpha.length < n ? returns : alpha);
     console.log('Historic return', expReturn);
-    var COV = Array(n * (n + 1) / 2);
-    for (let i = 0, ij = 0; i < n; ++i) {
-        var internali = DATA.slice(i * t, (i + 1) * t);
-        for (let j = 0; j <= i; j++, ij++) {
-            if (i === j) {
-                COV[ij] = optObj.covariance1(internali, internali, decay, t);
-            } else {
-                var internalj = DATA.slice(j * t, (j + 1) * t);
-                COV[ij] = optObj.covariance1(internali, internalj, decay, t);
+    /*    var COV = Array(n * (n + 1) / 2);
+        for (let i = 0, ij = 0; i < n; ++i) {
+            var internali = DATA.slice(i * t, (i + 1) * t);
+            for (let j = 0; j <= i; j++, ij++) {
+                if (i === j) {
+                    COV[ij] = optObj.covariance1(internali, internali, decay, t);
+                } else {
+                    var internalj = DATA.slice(j * t, (j + 1) * t);
+                    COV[ij] = optObj.covariance1(internali, internalj, decay, t);
+                }
             }
         }
-    }
-    var implied = Array(n);
-    optObj.Sym_mult(n, COV, w_opt, implied);
-    var variance = optObj.ddotvec(n, w_opt, implied);
-    console.log('variance', variance);
-    if (variance < 0) {
-        variance = 0;
-    }
-    var histRisk = Math.sqrt(variance);
-    console.log('Historic risk', histRisk);
+        var implied = Array(n);
+        optObj.Sym_mult(n, COV, w_opt, implied);
+        var variance = optObj.ddotvec(n, w_opt, implied);
+        console.log('variance', variance);
+        if (variance < 0) {
+            variance = 0;
+        }
+       var histRisk = Math.sqrt(variance);
+    console.log('Historic risk', histRisk);*/
     var cvarVal = firstRun ? initialCvarVal : optObj.CVarValue(n, t, DATA, number_included, w_opt);
     console.log('Etl', cvarVal);
     exports.CVAR = cvarVal;
-    exports.RISK = histRisk;
+    //   exports.RISK = histRisk;
     exports.RETURN = expReturn;
     exports.message = firstRun ? '' : optObj.Return_Message(back);
 }
