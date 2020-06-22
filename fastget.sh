@@ -5,7 +5,7 @@ model="/ZDrive/client_systems/Star_Systems_RM_build/BITA Risk Models/returnModel
 model="/ZDrive/client_systems/Star_Systems_RM_build/BITA Risk Models/returnModels/75 SEP19/loadfiles/BITA_ReturnModel_WITH-HACK_GBP_20190930.csv"
 model="/ZDrive/client_systems/Star_Systems_RM_build/BITA Risk Models/returnModels/77 NOV19/loadfiles/BITA_ReturnModel_WITH-HACK_GBP_20191129.csv"
 chooser="[1-8].[6-7].[2-8]"
-chooser="[1-8].[6-7].[3-7]"
+chooser="[1-8].[6-7].[6]"
 perl -e "while(<STDIN>){if(/^.$chooser/){print;}}" < "$model" > portfolioUA
 sed -i "s/,/ /g" portfolioUA
 echo n > p1
